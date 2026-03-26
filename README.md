@@ -7,6 +7,3 @@ This project is part of internship assignment.
 - Tokenization
 - Noise removal
 - Frequency analysis
-
-## Author
-Sankalp
