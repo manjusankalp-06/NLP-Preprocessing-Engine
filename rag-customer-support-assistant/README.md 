@@ -1,0 +1,161 @@
+# RAG-Based Customer Support Assistant using LangGraph & HITL
+
+This project is part of my VTU internship evaluation. It implements a Retrieval-Augmented Generation (RAG) based **Customer Support Assistant** that answers user queries from a PDF knowledge base using a vector database (ChromaDB) and a graph-based workflow (LangGraph) with Human-in-the-Loop (HITL) escalation.[cite:2][cite:8][web:16][web:20]
+
+---
+
+## 1. Features
+
+- PDF-based knowledge base (e.g., `sample_kb.pdf`).
+- RAG pipeline: load PDF → chunk → embed → store in ChromaDB → retrieve relevant chunks → generate answer with LLM.[cite:2][web:16][web:20][web:22]
+- Graph-based workflow using LangGraph (2-node flow: process node and output node).
+- Intent and confidence based conditional routing.
+- Human-in-the-Loop (HITL) escalation for low-confidence or sensitive queries.
+
+---
+
+## 2. Project Structure
+
+```text
+/Users/manju/Internships/Project
+├── app.py              # Main RAG + LangGraph + HITL application
+├── requirements.txt    # Python dependencies
+├── README.md           # Project overview and run instructions
+├── HLD.md              # High-Level Design document
+├── LLD.md              # Low-Level Design document
+├── Technical_Doc.md    # Detailed technical documentation
+└── sample_kb.pdf       # PDF knowledge base used by the assistant
+```
+
+---
+
+## 3. Prerequisites
+
+- Python 3.10+ (recommended).
+- pip (Python package manager).
+- Internet access (for LLM and possibly embedding model APIs).
+- A valid API key for the chosen LLM provider (e.g., OpenAI/Groq/Google GenAI) configured via environment variable in `app.py`.[web:12]
+
+---
+
+## 4. Installation
+
+From terminal:
+
+```bash
+cd /Users/manju/Internships/Project
+
+# Create and activate virtual environment (optional but recommended)
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+```
+
+`requirements.txt` contains the main libraries, for example:
+
+- `langchain`, `langchain-community`, `langchain-text-splitters`
+- `langgraph`
+- `chromadb`
+- `sentence-transformers` or LLM embedding client
+- `pypdf`
+- LLM provider SDK (OpenAI / Google GenAI / Groq, etc.)[web:16][web:20][web:22]
+
+---
+
+## 5. Configuration
+
+Set your LLM API key as an environment variable before running:
+
+```bash
+export OPENAI_API_KEY="your_api_key_here"
+# or the corresponding key for your provider
+```
+
+You can also hardcode a placeholder in `app.py` for local testing (not recommended for production).
+
+---
+
+## 6. How to Run (Demo Steps)
+
+1. Open terminal in the project folder:
+
+   ```bash
+   cd /Users/manju/Internships/Project
+   ```
+
+2. Run the app:
+
+   ```bash
+   python app.py
+   ```
+
+3. When prompted:
+
+   - Enter the full path to the PDF knowledge base, for example:
+
+     ```text
+     /Users/manju/Internships/Project/sample_kb.pdf
+     ```
+
+4. The system will:
+
+   - Load and chunk the PDF.
+   - Create/Update the ChromaDB vector store.
+   - Initialize the LangGraph workflow.
+   - Print:  
+     `RAG Customer Support Assistant is ready. Type 'exit' to stop.`
+
+5. Type queries such as:
+
+   - `What is the refund policy?`
+   - `How can I contact customer support?`
+   - `What are your working hours?`
+
+6. HITL demo scenario:
+
+   - Ask a sensitive or ambiguous query, e.g.:
+     - `Can you approve a refund above the standard limit?`
+     - `I want legal advice on this contract.`
+   - The routing logic should trigger HITL:
+     - CLI shows model’s draft answer and retrieved context.
+     - CLI prompts you (human) to approve or edit the answer.
+
+7. Type `exit` to stop the assistant.
+
+---
+
+## 7. How the System Works (Short)
+
+- **RAG**: Combines retrieval from a PDF knowledge base with LLM generation to give grounded answers.[web:16][web:20]
+- **ChromaDB**: Stores text chunks and their embeddings to support fast similarity search.[web:20][web:22]
+- **LangGraph**: Orchestrates the RAG workflow as a graph with a process node and output node, and maintains state for each query.[web:9][web:10][web:19]
+- **HITL**: Escalates low-confidence or sensitive queries to a human who can override or approve the model’s answer.[web:15][web:21][web:23]
+
+---
+
+## 8. VTU Evaluation Notes
+
+During evaluation, you can demonstrate:
+
+1. **Architecture**
+   - Show `HLD.md`, `LLD.md`, and `Technical_Doc.md` and explain:
+     - PDF → Chunk → Embedding → ChromaDB → Retrieval → LangGraph → LLM → HITL.
+
+2. **Live Demo**
+   - Run `python app.py`.
+   - Ask simple FAQ-style questions (auto-answers).
+   - Ask sensitive/complex question to show HITL escalation.
+
+3. **Scalability & Future Work**
+   - Explain how you can extend the system to:
+     - Multiple PDFs.
+     - Web API frontend.
+     - Feedback loop from HITL to improve routing.
+
+---
+
+## 9. Acknowledgements
+
+This project is implemented as part of my VTU internship, focusing on modern AI system design using RAG, LangGraph, vector databases, and Human-in-the-Loop workflows.[cite:2][cite:8][web:35][web:37]
